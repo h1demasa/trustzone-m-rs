@@ -6,7 +6,7 @@ use panic_halt as _; // put a breakpoint on `rust_begin_unwind` to catch panics
 use cortex_m_semihosting::hprintln;
 
 // use all secure world functions
-extern "C" {
+unsafe extern "C" {
     fn secure_function();
     fn secure_function_pointers(
         input: *const u8,

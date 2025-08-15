@@ -1,4 +1,4 @@
-#![feature(abi_c_cmse_nonsecure_call, cmse_nonsecure_entry)]
+#![feature(abi_cmse_nonsecure_call, cmse_nonsecure_entry)]
 #![no_std]
 #![no_main]
 
@@ -46,7 +46,7 @@ fn main() -> ! {
     )
     .unwrap();
     // Allow to call NSC functions
-    extern "C" {
+    unsafe extern "C" {
         static __veneer_base: u32;
         static __veneer_limit: u32;
     }
@@ -87,21 +87,19 @@ fn main() -> ! {
         cortex_m::register::msp::write_ns(*(ns_vector_table_addr as *const u32));
         // Create a Non-Secure function pointer to the address of the second entry of the Non
         // Secure Vector Table.
-        let ns_reset_vector: extern "C-cmse-nonsecure-call" fn() -> ! =
+        let ns_reset_vector: extern "cmse-nonsecure-call" fn() -> ! =
             core::mem::transmute::<u32, _>(ns_vector_table_addr + 4);
         ns_reset_vector()
     }
 }
 
-#[no_mangle]
-#[cmse_nonsecure_entry]
-pub extern "C" fn secure_function() {
+#[unsafe(no_mangle)]
+pub extern "cmse-nonsecure-entry" fn secure_function() {
     hprintln!("secure function called!");
 }
 
-#[no_mangle]
-#[cmse_nonsecure_entry]
-pub extern "C" fn secure_function_pointers(
+#[unsafe(no_mangle)]
+pub extern "cmse-nonsecure-entry" fn secure_function_pointers(
     input: *const u8,
     input_length: usize,
     output: *mut u8,
@@ -123,10 +121,9 @@ pub extern "C" fn secure_function_pointers(
     }
 }
 
-#[no_mangle]
-#[cmse_nonsecure_entry]
-pub extern "C" fn secure_callback(callback: unsafe extern "C" fn()) {
-    let callback: unsafe extern "C-cmse-nonsecure-call" fn() =
+#[unsafe(no_mangle)]
+pub extern "cmse-nonsecure-entry" fn secure_callback(callback: unsafe extern "C" fn()) {
+    let callback: unsafe extern "cmse-nonsecure-call" fn() =
         unsafe { core::mem::transmute(callback) };
     unsafe {
         callback();

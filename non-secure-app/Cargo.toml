@@ -1,15 +1,15 @@
 [package]
 authors = ["luojia65 <me@luojia.cc>"]
-edition = "2021"
+edition = "2024"
 readme = "README.md"
 name = "non-secure-app"
 version = "0.1.0"
 
 [dependencies]
-cortex-m = "0.7.6"
-cortex-m-rt = "0.7.1"
-cortex-m-semihosting = "0.5.0"
-panic-halt = "0.2.0"
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+cortex-m-semihosting = "0.5"
+panic-halt = "1"
 
 # this lets you use `cargo fix`!
 [[bin]]
